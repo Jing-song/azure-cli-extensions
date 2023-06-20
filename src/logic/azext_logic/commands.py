@@ -11,4 +11,12 @@
 # from azure.cli.core.commands import CliCommandType
 
 def load_command_table(self, _):  # pylint: disable=unused-argument
-    pass
+    with self.command_group('logic integration-account'):
+        from azext_logic.custom import IntegrationAccountCreate, IntegrationAccountImport
+        self.command_table['logic integration-account create'] = IntegrationAccountCreate(loader=self)
+        self.command_table['logic integration-account import'] = IntegrationAccountImport(loader=self)
+
+    with self.command_group('logic workflow'):
+        from azext_logic.custom import WorkflowCreate, WorkflowUpdate
+        self.command_table['logic workflow create'] = WorkflowCreate(loader=self)
+        self.command_table['logic workflow update'] = WorkflowUpdate(loader=self)

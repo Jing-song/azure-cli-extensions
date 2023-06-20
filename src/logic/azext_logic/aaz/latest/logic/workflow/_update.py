@@ -94,25 +94,253 @@ class Update(AAZCommand):
             help="The access control configuration for workflow actions.",
             nullable=True,
         )
-        cls._build_args_flow_access_control_configuration_policy_update(access_control.actions)
         access_control.contents = AAZObjectArg(
             options=["contents"],
             help="The access control configuration for accessing workflow run contents.",
             nullable=True,
         )
-        cls._build_args_flow_access_control_configuration_policy_update(access_control.contents)
         access_control.triggers = AAZObjectArg(
             options=["triggers"],
             help="The access control configuration for invoking workflow triggers.",
             nullable=True,
         )
-        cls._build_args_flow_access_control_configuration_policy_update(access_control.triggers)
         access_control.workflow_management = AAZObjectArg(
             options=["workflow-management"],
             help="The access control configuration for workflow management.",
             nullable=True,
         )
-        cls._build_args_flow_access_control_configuration_policy_update(access_control.workflow_management)
+
+        actions = cls._args_schema.access_control.actions
+        actions.allowed_caller_ip_addresses = AAZListArg(
+            options=["allowed-caller-ip-addresses"],
+            nullable=True,
+        )
+        actions.open_authentication_policies = AAZObjectArg(
+            options=["open-authentication-policies"],
+            nullable=True,
+        )
+
+        allowed_caller_ip_addresses = cls._args_schema.access_control.actions.allowed_caller_ip_addresses
+        allowed_caller_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.actions.allowed_caller_ip_addresses.Element
+        _element.address_range = AAZStrArg(
+            options=["address-range"],
+            nullable=True,
+        )
+
+        open_authentication_policies = cls._args_schema.access_control.actions.open_authentication_policies
+        open_authentication_policies.policies = AAZDictArg(
+            options=["policies"],
+            nullable=True,
+        )
+
+        policies = cls._args_schema.access_control.actions.open_authentication_policies.policies
+        policies.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.actions.open_authentication_policies.policies.Element
+        _element.claims = AAZListArg(
+            options=["claims"],
+            nullable=True,
+        )
+        _element.type = AAZStrArg(
+            options=["type"],
+            nullable=True,
+            enum={"AAD": "AAD"},
+        )
+
+        claims = cls._args_schema.access_control.actions.open_authentication_policies.policies.Element.claims
+        claims.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.actions.open_authentication_policies.policies.Element.claims.Element
+        _element.name = AAZStrArg(
+            options=["name"],
+            nullable=True,
+        )
+        _element.value = AAZStrArg(
+            options=["value"],
+            nullable=True,
+        )
+
+        contents = cls._args_schema.access_control.contents
+        contents.allowed_caller_ip_addresses = AAZListArg(
+            options=["allowed-caller-ip-addresses"],
+            nullable=True,
+        )
+        contents.open_authentication_policies = AAZObjectArg(
+            options=["open-authentication-policies"],
+            nullable=True,
+        )
+
+        allowed_caller_ip_addresses = cls._args_schema.access_control.contents.allowed_caller_ip_addresses
+        allowed_caller_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.contents.allowed_caller_ip_addresses.Element
+        _element.address_range = AAZStrArg(
+            options=["address-range"],
+            nullable=True,
+        )
+
+        open_authentication_policies = cls._args_schema.access_control.contents.open_authentication_policies
+        open_authentication_policies.policies = AAZDictArg(
+            options=["policies"],
+            nullable=True,
+        )
+
+        policies = cls._args_schema.access_control.contents.open_authentication_policies.policies
+        policies.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.contents.open_authentication_policies.policies.Element
+        _element.claims = AAZListArg(
+            options=["claims"],
+            nullable=True,
+        )
+        _element.type = AAZStrArg(
+            options=["type"],
+            nullable=True,
+            enum={"AAD": "AAD"},
+        )
+
+        claims = cls._args_schema.access_control.contents.open_authentication_policies.policies.Element.claims
+        claims.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.contents.open_authentication_policies.policies.Element.claims.Element
+        _element.name = AAZStrArg(
+            options=["name"],
+            nullable=True,
+        )
+        _element.value = AAZStrArg(
+            options=["value"],
+            nullable=True,
+        )
+
+        triggers = cls._args_schema.access_control.triggers
+        triggers.allowed_caller_ip_addresses = AAZListArg(
+            options=["allowed-caller-ip-addresses"],
+            nullable=True,
+        )
+        triggers.open_authentication_policies = AAZObjectArg(
+            options=["open-authentication-policies"],
+            nullable=True,
+        )
+
+        allowed_caller_ip_addresses = cls._args_schema.access_control.triggers.allowed_caller_ip_addresses
+        allowed_caller_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.triggers.allowed_caller_ip_addresses.Element
+        _element.address_range = AAZStrArg(
+            options=["address-range"],
+            nullable=True,
+        )
+
+        open_authentication_policies = cls._args_schema.access_control.triggers.open_authentication_policies
+        open_authentication_policies.policies = AAZDictArg(
+            options=["policies"],
+            nullable=True,
+        )
+
+        policies = cls._args_schema.access_control.triggers.open_authentication_policies.policies
+        policies.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.triggers.open_authentication_policies.policies.Element
+        _element.claims = AAZListArg(
+            options=["claims"],
+            nullable=True,
+        )
+        _element.type = AAZStrArg(
+            options=["type"],
+            nullable=True,
+            enum={"AAD": "AAD"},
+        )
+
+        claims = cls._args_schema.access_control.triggers.open_authentication_policies.policies.Element.claims
+        claims.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.triggers.open_authentication_policies.policies.Element.claims.Element
+        _element.name = AAZStrArg(
+            options=["name"],
+            nullable=True,
+        )
+        _element.value = AAZStrArg(
+            options=["value"],
+            nullable=True,
+        )
+
+        workflow_management = cls._args_schema.access_control.workflow_management
+        workflow_management.allowed_caller_ip_addresses = AAZListArg(
+            options=["allowed-caller-ip-addresses"],
+            nullable=True,
+        )
+        workflow_management.open_authentication_policies = AAZObjectArg(
+            options=["open-authentication-policies"],
+            nullable=True,
+        )
+
+        allowed_caller_ip_addresses = cls._args_schema.access_control.workflow_management.allowed_caller_ip_addresses
+        allowed_caller_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.workflow_management.allowed_caller_ip_addresses.Element
+        _element.address_range = AAZStrArg(
+            options=["address-range"],
+            nullable=True,
+        )
+
+        open_authentication_policies = cls._args_schema.access_control.workflow_management.open_authentication_policies
+        open_authentication_policies.policies = AAZDictArg(
+            options=["policies"],
+            nullable=True,
+        )
+
+        policies = cls._args_schema.access_control.workflow_management.open_authentication_policies.policies
+        policies.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.workflow_management.open_authentication_policies.policies.Element
+        _element.claims = AAZListArg(
+            options=["claims"],
+            nullable=True,
+        )
+        _element.type = AAZStrArg(
+            options=["type"],
+            nullable=True,
+            enum={"AAD": "AAD"},
+        )
+
+        claims = cls._args_schema.access_control.workflow_management.open_authentication_policies.policies.Element.claims
+        claims.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.access_control.workflow_management.open_authentication_policies.policies.Element.claims.Element
+        _element.name = AAZStrArg(
+            options=["name"],
+            nullable=True,
+        )
+        _element.value = AAZStrArg(
+            options=["value"],
+            nullable=True,
+        )
 
         endpoints_configuration = cls._args_schema.endpoints_configuration
         endpoints_configuration.connector = AAZObjectArg(
@@ -120,13 +348,75 @@ class Update(AAZCommand):
             help="The connector endpoints.",
             nullable=True,
         )
-        cls._build_args_flow_endpoints_update(endpoints_configuration.connector)
         endpoints_configuration.workflow = AAZObjectArg(
             options=["workflow"],
             help="The workflow endpoints.",
             nullable=True,
         )
-        cls._build_args_flow_endpoints_update(endpoints_configuration.workflow)
+
+        connector = cls._args_schema.endpoints_configuration.connector
+        connector.access_endpoint_ip_addresses = AAZListArg(
+            options=["access-endpoint-ip-addresses"],
+            nullable=True,
+        )
+        connector.outgoing_ip_addresses = AAZListArg(
+            options=["outgoing-ip-addresses"],
+            nullable=True,
+        )
+
+        access_endpoint_ip_addresses = cls._args_schema.endpoints_configuration.connector.access_endpoint_ip_addresses
+        access_endpoint_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.endpoints_configuration.connector.access_endpoint_ip_addresses.Element
+        _element.address = AAZStrArg(
+            options=["address"],
+            nullable=True,
+        )
+
+        outgoing_ip_addresses = cls._args_schema.endpoints_configuration.connector.outgoing_ip_addresses
+        outgoing_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.endpoints_configuration.connector.outgoing_ip_addresses.Element
+        _element.address = AAZStrArg(
+            options=["address"],
+            nullable=True,
+        )
+
+        workflow = cls._args_schema.endpoints_configuration.workflow
+        workflow.access_endpoint_ip_addresses = AAZListArg(
+            options=["access-endpoint-ip-addresses"],
+            nullable=True,
+        )
+        workflow.outgoing_ip_addresses = AAZListArg(
+            options=["outgoing-ip-addresses"],
+            nullable=True,
+        )
+
+        access_endpoint_ip_addresses = cls._args_schema.endpoints_configuration.workflow.access_endpoint_ip_addresses
+        access_endpoint_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.endpoints_configuration.workflow.access_endpoint_ip_addresses.Element
+        _element.address = AAZStrArg(
+            options=["address"],
+            nullable=True,
+        )
+
+        outgoing_ip_addresses = cls._args_schema.endpoints_configuration.workflow.outgoing_ip_addresses
+        outgoing_ip_addresses.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.endpoints_configuration.workflow.outgoing_ip_addresses.Element
+        _element.address = AAZStrArg(
+            options=["address"],
+            nullable=True,
+        )
 
         integration_account = cls._args_schema.integration_account
         integration_account.id = AAZStrArg(
@@ -165,149 +455,6 @@ class Update(AAZCommand):
             nullable=True,
         )
         return cls._args_schema
-
-    _args_flow_access_control_configuration_policy_update = None
-
-    @classmethod
-    def _build_args_flow_access_control_configuration_policy_update(cls, _schema):
-        if cls._args_flow_access_control_configuration_policy_update is not None:
-            _schema.allowed_caller_ip_addresses = cls._args_flow_access_control_configuration_policy_update.allowed_caller_ip_addresses
-            _schema.open_authentication_policies = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies
-            return
-
-        cls._args_flow_access_control_configuration_policy_update = AAZObjectArg(
-            nullable=True,
-        )
-
-        flow_access_control_configuration_policy_update = cls._args_flow_access_control_configuration_policy_update
-        flow_access_control_configuration_policy_update.allowed_caller_ip_addresses = AAZListArg(
-            options=["allowed-caller-ip-addresses"],
-            help="The allowed caller IP address ranges.",
-            nullable=True,
-        )
-        flow_access_control_configuration_policy_update.open_authentication_policies = AAZObjectArg(
-            options=["open-authentication-policies"],
-            help="The authentication policies for workflow.",
-            nullable=True,
-        )
-
-        allowed_caller_ip_addresses = cls._args_flow_access_control_configuration_policy_update.allowed_caller_ip_addresses
-        allowed_caller_ip_addresses.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_flow_access_control_configuration_policy_update.allowed_caller_ip_addresses.Element
-        _element.address_range = AAZStrArg(
-            options=["address-range"],
-            help="The IP address range.",
-            nullable=True,
-        )
-
-        open_authentication_policies = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies
-        open_authentication_policies.policies = AAZDictArg(
-            options=["policies"],
-            help="Open authentication policies.",
-            nullable=True,
-        )
-
-        policies = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies.policies
-        policies.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies.policies.Element
-        _element.claims = AAZListArg(
-            options=["claims"],
-            help="The access policy claims.",
-            nullable=True,
-        )
-        _element.type = AAZStrArg(
-            options=["type"],
-            help="Type of provider for OAuth.",
-            nullable=True,
-            enum={"AAD": "AAD"},
-        )
-
-        claims = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies.policies.Element.claims
-        claims.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies.policies.Element.claims.Element
-        _element.name = AAZStrArg(
-            options=["name"],
-            help="The name of the claim.",
-            nullable=True,
-        )
-        _element.value = AAZStrArg(
-            options=["value"],
-            help="The value of the claim.",
-            nullable=True,
-        )
-
-        _schema.allowed_caller_ip_addresses = cls._args_flow_access_control_configuration_policy_update.allowed_caller_ip_addresses
-        _schema.open_authentication_policies = cls._args_flow_access_control_configuration_policy_update.open_authentication_policies
-
-    _args_flow_endpoints_update = None
-
-    @classmethod
-    def _build_args_flow_endpoints_update(cls, _schema):
-        if cls._args_flow_endpoints_update is not None:
-            _schema.access_endpoint_ip_addresses = cls._args_flow_endpoints_update.access_endpoint_ip_addresses
-            _schema.outgoing_ip_addresses = cls._args_flow_endpoints_update.outgoing_ip_addresses
-            return
-
-        cls._args_flow_endpoints_update = AAZObjectArg(
-            nullable=True,
-        )
-
-        flow_endpoints_update = cls._args_flow_endpoints_update
-        flow_endpoints_update.access_endpoint_ip_addresses = AAZListArg(
-            options=["access-endpoint-ip-addresses"],
-            help="The access endpoint ip address.",
-            nullable=True,
-        )
-        flow_endpoints_update.outgoing_ip_addresses = AAZListArg(
-            options=["outgoing-ip-addresses"],
-            help="The outgoing ip address.",
-            nullable=True,
-        )
-
-        access_endpoint_ip_addresses = cls._args_flow_endpoints_update.access_endpoint_ip_addresses
-        access_endpoint_ip_addresses.Element = AAZObjectArg(
-            nullable=True,
-        )
-        cls._build_args_ip_address_update(access_endpoint_ip_addresses.Element)
-
-        outgoing_ip_addresses = cls._args_flow_endpoints_update.outgoing_ip_addresses
-        outgoing_ip_addresses.Element = AAZObjectArg(
-            nullable=True,
-        )
-        cls._build_args_ip_address_update(outgoing_ip_addresses.Element)
-
-        _schema.access_endpoint_ip_addresses = cls._args_flow_endpoints_update.access_endpoint_ip_addresses
-        _schema.outgoing_ip_addresses = cls._args_flow_endpoints_update.outgoing_ip_addresses
-
-    _args_ip_address_update = None
-
-    @classmethod
-    def _build_args_ip_address_update(cls, _schema):
-        if cls._args_ip_address_update is not None:
-            _schema.address = cls._args_ip_address_update.address
-            return
-
-        cls._args_ip_address_update = AAZObjectArg(
-            nullable=True,
-        )
-
-        ip_address_update = cls._args_ip_address_update
-        ip_address_update.address = AAZStrArg(
-            options=["address"],
-            help="The address.",
-            nullable=True,
-        )
-
-        _schema.address = cls._args_ip_address_update.address
 
     def _execute_operations(self):
         self.pre_operations()
@@ -542,15 +689,197 @@ class Update(AAZCommand):
 
             access_control = _builder.get(".properties.accessControl")
             if access_control is not None:
-                _UpdateHelper._build_schema_flow_access_control_configuration_policy_update(access_control.set_prop("actions", AAZObjectType, ".actions"))
-                _UpdateHelper._build_schema_flow_access_control_configuration_policy_update(access_control.set_prop("contents", AAZObjectType, ".contents"))
-                _UpdateHelper._build_schema_flow_access_control_configuration_policy_update(access_control.set_prop("triggers", AAZObjectType, ".triggers"))
-                _UpdateHelper._build_schema_flow_access_control_configuration_policy_update(access_control.set_prop("workflowManagement", AAZObjectType, ".workflow_management"))
+                access_control.set_prop("actions", AAZObjectType, ".actions")
+                access_control.set_prop("contents", AAZObjectType, ".contents")
+                access_control.set_prop("triggers", AAZObjectType, ".triggers")
+                access_control.set_prop("workflowManagement", AAZObjectType, ".workflow_management")
+
+            actions = _builder.get(".properties.accessControl.actions")
+            if actions is not None:
+                actions.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                actions.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.actions.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            contents = _builder.get(".properties.accessControl.contents")
+            if contents is not None:
+                contents.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                contents.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.contents.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.contents.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            triggers = _builder.get(".properties.accessControl.triggers")
+            if triggers is not None:
+                triggers.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                triggers.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.triggers.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.triggers.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            workflow_management = _builder.get(".properties.accessControl.workflowManagement")
+            if workflow_management is not None:
+                workflow_management.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                workflow_management.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.workflowManagement.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.workflowManagement.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
 
             endpoints_configuration = _builder.get(".properties.endpointsConfiguration")
             if endpoints_configuration is not None:
-                _UpdateHelper._build_schema_flow_endpoints_update(endpoints_configuration.set_prop("connector", AAZObjectType, ".connector"))
-                _UpdateHelper._build_schema_flow_endpoints_update(endpoints_configuration.set_prop("workflow", AAZObjectType, ".workflow"))
+                endpoints_configuration.set_prop("connector", AAZObjectType, ".connector")
+                endpoints_configuration.set_prop("workflow", AAZObjectType, ".workflow")
+
+            connector = _builder.get(".properties.endpointsConfiguration.connector")
+            if connector is not None:
+                connector.set_prop("accessEndpointIpAddresses", AAZListType, ".access_endpoint_ip_addresses")
+                connector.set_prop("outgoingIpAddresses", AAZListType, ".outgoing_ip_addresses")
+
+            access_endpoint_ip_addresses = _builder.get(".properties.endpointsConfiguration.connector.accessEndpointIpAddresses")
+            if access_endpoint_ip_addresses is not None:
+                access_endpoint_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.connector.accessEndpointIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            outgoing_ip_addresses = _builder.get(".properties.endpointsConfiguration.connector.outgoingIpAddresses")
+            if outgoing_ip_addresses is not None:
+                outgoing_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.connector.outgoingIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            workflow = _builder.get(".properties.endpointsConfiguration.workflow")
+            if workflow is not None:
+                workflow.set_prop("accessEndpointIpAddresses", AAZListType, ".access_endpoint_ip_addresses")
+                workflow.set_prop("outgoingIpAddresses", AAZListType, ".outgoing_ip_addresses")
+
+            access_endpoint_ip_addresses = _builder.get(".properties.endpointsConfiguration.workflow.accessEndpointIpAddresses")
+            if access_endpoint_ip_addresses is not None:
+                access_endpoint_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.workflow.accessEndpointIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            outgoing_ip_addresses = _builder.get(".properties.endpointsConfiguration.workflow.outgoingIpAddresses")
+            if outgoing_ip_addresses is not None:
+                outgoing_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.workflow.outgoingIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
 
             integration_account = _builder.get(".properties.integrationAccount")
             if integration_account is not None:
@@ -577,64 +906,6 @@ class Update(AAZCommand):
 
 class _UpdateHelper:
     """Helper class for Update"""
-
-    @classmethod
-    def _build_schema_flow_access_control_configuration_policy_update(cls, _builder):
-        if _builder is None:
-            return
-        _builder.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
-        _builder.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
-
-        allowed_caller_ip_addresses = _builder.get(".allowedCallerIpAddresses")
-        if allowed_caller_ip_addresses is not None:
-            allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
-
-        _elements = _builder.get(".allowedCallerIpAddresses[]")
-        if _elements is not None:
-            _elements.set_prop("addressRange", AAZStrType, ".address_range")
-
-        open_authentication_policies = _builder.get(".openAuthenticationPolicies")
-        if open_authentication_policies is not None:
-            open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
-
-        policies = _builder.get(".openAuthenticationPolicies.policies")
-        if policies is not None:
-            policies.set_elements(AAZObjectType, ".")
-
-        _elements = _builder.get(".openAuthenticationPolicies.policies{}")
-        if _elements is not None:
-            _elements.set_prop("claims", AAZListType, ".claims")
-            _elements.set_prop("type", AAZStrType, ".type")
-
-        claims = _builder.get(".openAuthenticationPolicies.policies{}.claims")
-        if claims is not None:
-            claims.set_elements(AAZObjectType, ".")
-
-        _elements = _builder.get(".openAuthenticationPolicies.policies{}.claims[]")
-        if _elements is not None:
-            _elements.set_prop("name", AAZStrType, ".name")
-            _elements.set_prop("value", AAZStrType, ".value")
-
-    @classmethod
-    def _build_schema_flow_endpoints_update(cls, _builder):
-        if _builder is None:
-            return
-        _builder.set_prop("accessEndpointIpAddresses", AAZListType, ".access_endpoint_ip_addresses")
-        _builder.set_prop("outgoingIpAddresses", AAZListType, ".outgoing_ip_addresses")
-
-        access_endpoint_ip_addresses = _builder.get(".accessEndpointIpAddresses")
-        if access_endpoint_ip_addresses is not None:
-            cls._build_schema_ip_address_update(access_endpoint_ip_addresses.set_elements(AAZObjectType, "."))
-
-        outgoing_ip_addresses = _builder.get(".outgoingIpAddresses")
-        if outgoing_ip_addresses is not None:
-            cls._build_schema_ip_address_update(outgoing_ip_addresses.set_elements(AAZObjectType, "."))
-
-    @classmethod
-    def _build_schema_ip_address_update(cls, _builder):
-        if _builder is None:
-            return
-        _builder.set_prop("address", AAZStrType, ".address")
 
     _schema_flow_access_control_configuration_policy_read = None
 

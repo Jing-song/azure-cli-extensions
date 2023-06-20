@@ -7,32 +7,339 @@
 
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-statements
+from azure.cli.core.aaz import has_value
 from azext_logic.aaz.latest.logic.integration_account import Create as _IntegrationAccountCreate
+from azext_logic.aaz.latest.logic.workflow import Create as _WorkflowCreate
+from azext_logic.aaz.latest.logic.workflow import Update as _WorkflowUpdate
+
+
+class IntegrationAccountCreate(_IntegrationAccountCreate):
+    def pre_operations(self):
+        args = self.ctx.args
+        if not has_value(args.state):
+            args.state = "Enabled"
 
 
 class IntegrationAccountImport(_IntegrationAccountCreate):
     @classmethod
     def _build_arguments_schema(cls, *args, **kwargs):
-        from azure.cli.core.aaz import AAZFileArg, AAZFreeFormDictArgFormat
+        from azure.cli.core.aaz import AAZFreeFormDictArg, AAZFreeFormDictArgFormat
         args_schema = super()._build_arguments_schema(*args, **kwargs)
-        args_schema.input_path = AAZFileArg(
-            options=["--mi-system-assigned"],
+        args_schema.input_path = AAZFreeFormDictArg(
+            options=["--input-path"],
             help="Path to a integration account JSON file",
             fmt=AAZFreeFormDictArgFormat()
         )
-        args_schema.identity._registered = False
+        args_schema.integration_service_environment._registered = False
         return args_schema
 
     def pre_operations(self):
         args = self.ctx.args
         if 'properties' not in args.input_path:
             from azure.cli.core.parser import InvalidArgumentValueError
-            raise InvalidArgumentValueError(str(args.input_path) + "does not contain a 'properties' key")
+            raise InvalidArgumentValueError("This file does not contain a 'properties' key")
 
         integration_service_environment = args.input_path['properties'].get(
             'integrationServiceEnvironment', None)
         if integration_service_environment is not None:
             args.integration_service_environment = integration_service_environment
 
+        args.state = args.input_path['properties'].get('state', 'Enabled') if 'properties' in args.input_path else args.state
+        args.location = args.input_path['location'] if 'location' in args.input_path else args.location
+        args.sku = args.input_path['sku'].get('name', None) if 'sku' in args.input_path else args.sku
+        args.tags = args.input_path['tags'] if 'tags' in args.input_path else args.tags
 
+
+class WorkflowCreate(_WorkflowCreate):
+    @classmethod
+    def _build_arguments_schema(cls, *args, **kwargs):
+        from azure.cli.core.aaz import AAZFreeFormDictArg, AAZFreeFormDictArgFormat
+        args_schema = super()._build_arguments_schema(*args, **kwargs)
+        args_schema.definition = AAZFreeFormDictArg(
+            options=["--definition"],
+            help="Path to a workflow defintion JSON file (see https://github.com/Azure/azure-cli-extensions/blob/main/src/logic/README.md for more info on this).",
+            fmt=AAZFreeFormDictArgFormat()
+        )
+        return args_schema
+
+    def pre_operations(self):
+        from azure.cli.core.parser import InvalidArgumentValueError
+        args = self.ctx.args
+        if 'definition' not in args.definition:
+            raise InvalidArgumentValueError("This file does not contain a 'definition' key")
+
+    def _output(self, *args, **kwargs):
+        return self.ctx.vars.instance.to_serialized_data()
+
+    class WorkflowsCreateOrUpdate(_WorkflowCreate.WorkflowsCreateOrUpdate):
+        @property
+        def content(self):
+            from azure.cli.core.aaz import AAZObjectType, AAZStrType, AAZDictType, AAZListType
+            _content_value, _builder = self.new_content_builder(
+                self.ctx.args,
+                typ=AAZObjectType,
+                typ_kwargs={"flags": {"required": True, "client_flatten": True}}
+            )
+            _builder.set_prop("location", AAZStrType, ".location")
+            _builder.set_prop("properties", AAZObjectType, typ_kwargs={"flags": {"client_flatten": True}})
+            _builder.set_prop("tags", AAZDictType, ".tags")
+
+            properties = _builder.get(".properties")
+            if properties is not None:
+                properties.set_prop("accessControl", AAZObjectType, ".access_control")
+                properties.set_prop("endpointsConfiguration", AAZObjectType, ".endpoints_configuration")
+                properties.set_prop("integrationAccount", AAZObjectType, ".integration_account")
+                properties.set_prop("integrationServiceEnvironment", AAZObjectType, ".integration_service_environment")
+                properties.set_prop("state", AAZStrType, ".state")
+
+            access_control = _builder.get(".properties.accessControl")
+            if access_control is not None:
+                access_control.set_prop("actions", AAZObjectType, ".actions")
+                access_control.set_prop("contents", AAZObjectType, ".contents")
+                access_control.set_prop("triggers", AAZObjectType, ".triggers")
+                access_control.set_prop("workflowManagement", AAZObjectType, ".workflow_management")
+
+            actions = _builder.get(".properties.accessControl.actions")
+            if actions is not None:
+                actions.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                actions.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.actions.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.actions.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            contents = _builder.get(".properties.accessControl.contents")
+            if contents is not None:
+                contents.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                contents.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.contents.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.contents.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.contents.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(
+                ".properties.accessControl.contents.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            triggers = _builder.get(".properties.accessControl.triggers")
+            if triggers is not None:
+                triggers.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                triggers.set_prop("openAuthenticationPolicies", AAZObjectType, ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(".properties.accessControl.triggers.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.triggers.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(".properties.accessControl.triggers.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(
+                ".properties.accessControl.triggers.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            workflow_management = _builder.get(".properties.accessControl.workflowManagement")
+            if workflow_management is not None:
+                workflow_management.set_prop("allowedCallerIpAddresses", AAZListType, ".allowed_caller_ip_addresses")
+                workflow_management.set_prop("openAuthenticationPolicies", AAZObjectType,
+                                             ".open_authentication_policies")
+
+            allowed_caller_ip_addresses = _builder.get(
+                ".properties.accessControl.workflowManagement.allowedCallerIpAddresses")
+            if allowed_caller_ip_addresses is not None:
+                allowed_caller_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.accessControl.workflowManagement.allowedCallerIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("addressRange", AAZStrType, ".address_range")
+
+            open_authentication_policies = _builder.get(
+                ".properties.accessControl.workflowManagement.openAuthenticationPolicies")
+            if open_authentication_policies is not None:
+                open_authentication_policies.set_prop("policies", AAZDictType, ".policies")
+
+            policies = _builder.get(".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies")
+            if policies is not None:
+                policies.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(
+                ".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}")
+            if _elements is not None:
+                _elements.set_prop("claims", AAZListType, ".claims")
+                _elements.set_prop("type", AAZStrType, ".type")
+
+            claims = _builder.get(
+                ".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}.claims")
+            if claims is not None:
+                claims.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(
+                ".properties.accessControl.workflowManagement.openAuthenticationPolicies.policies{}.claims[]")
+            if _elements is not None:
+                _elements.set_prop("name", AAZStrType, ".name")
+                _elements.set_prop("value", AAZStrType, ".value")
+
+            endpoints_configuration = _builder.get(".properties.endpointsConfiguration")
+            if endpoints_configuration is not None:
+                endpoints_configuration.set_prop("connector", AAZObjectType, ".connector")
+                endpoints_configuration.set_prop("workflow", AAZObjectType, ".workflow")
+
+            connector = _builder.get(".properties.endpointsConfiguration.connector")
+            if connector is not None:
+                connector.set_prop("accessEndpointIpAddresses", AAZListType, ".access_endpoint_ip_addresses")
+                connector.set_prop("outgoingIpAddresses", AAZListType, ".outgoing_ip_addresses")
+
+            access_endpoint_ip_addresses = _builder.get(
+                ".properties.endpointsConfiguration.connector.accessEndpointIpAddresses")
+            if access_endpoint_ip_addresses is not None:
+                access_endpoint_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.connector.accessEndpointIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            outgoing_ip_addresses = _builder.get(".properties.endpointsConfiguration.connector.outgoingIpAddresses")
+            if outgoing_ip_addresses is not None:
+                outgoing_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.connector.outgoingIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            workflow = _builder.get(".properties.endpointsConfiguration.workflow")
+            if workflow is not None:
+                workflow.set_prop("accessEndpointIpAddresses", AAZListType, ".access_endpoint_ip_addresses")
+                workflow.set_prop("outgoingIpAddresses", AAZListType, ".outgoing_ip_addresses")
+
+            access_endpoint_ip_addresses = _builder.get(
+                ".properties.endpointsConfiguration.workflow.accessEndpointIpAddresses")
+            if access_endpoint_ip_addresses is not None:
+                access_endpoint_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.workflow.accessEndpointIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            outgoing_ip_addresses = _builder.get(".properties.endpointsConfiguration.workflow.outgoingIpAddresses")
+            if outgoing_ip_addresses is not None:
+                outgoing_ip_addresses.set_elements(AAZObjectType, ".")
+
+            _elements = _builder.get(".properties.endpointsConfiguration.workflow.outgoingIpAddresses[]")
+            if _elements is not None:
+                _elements.set_prop("address", AAZStrType, ".address")
+
+            integration_account = _builder.get(".properties.integrationAccount")
+            if integration_account is not None:
+                integration_account.set_prop("id", AAZStrType, ".id")
+
+            integration_service_environment = _builder.get(".properties.integrationServiceEnvironment")
+            if integration_service_environment is not None:
+                integration_service_environment.set_prop("id", AAZStrType, ".id")
+
+            tags = _builder.get(".tags")
+            if tags is not None:
+                tags.set_elements(AAZStrType, ".")
+
+            output = self.serialize_content(_content_value)
+            if has_value(self.ctx.args.definition):
+                output["properties"] = self.ctx.args.definition.to_serialized_data()
+            return output
+
+
+class WorkflowUpdate(_WorkflowUpdate):
+    @classmethod
+    def _build_arguments_schema(cls, *args, **kwargs):
+        from azure.cli.core.aaz import AAZFreeFormDictArg, AAZFreeFormDictArgFormat
+        args_schema = super()._build_arguments_schema(*args, **kwargs)
+        args_schema.definition = AAZFreeFormDictArg(
+            options=["--definition"],
+            help="Path to a workflow defintion JSON file (see https://github.com/Azure/azure-cli-extensions/blob/main/src/logic/README.md for more info on this).",
+            fmt=AAZFreeFormDictArgFormat()
+        )
+        return args_schema
+
+    def pre_operations(self):
+        from azure.cli.core.parser import InvalidArgumentValueError
+        args = self.ctx.args
+        if 'definition' not in args.definition and "definition" not in args.definition.to_serialized_data():
+            raise InvalidArgumentValueError("This file does not contain a 'definition' key")
+
+    class WorkflowsCreateOrUpdate(_WorkflowUpdate.WorkflowsCreateOrUpdate):
+        @property
+        def content(self):
+            _content_value, _builder = self.new_content_builder(
+                self.ctx.args,
+                value=self.ctx.vars.instance,
+            )
+            output = self.serialize_content(_content_value)
+            output["properties"] = self.ctx.args.definition.to_serialized_data()
+            return output
 

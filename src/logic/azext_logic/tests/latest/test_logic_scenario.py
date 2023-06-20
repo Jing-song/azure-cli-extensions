@@ -22,17 +22,16 @@ class LogicManagementClientScenarioTest(ScenarioTest):
     @ResourceGroupPreparer(name_prefix='cli_test_logic_test-resource-group'[:9], key='rg')
     @ResourceGroupPreparer(name_prefix='cli_test_logic_testResourceGroup'[:9], key='rg_2')
     def test_logic(self, resource_group):
-
-        self.kwargs.update({
-            'subscription_id': self.current_subscription()
-        })
-
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
         self.kwargs.update({
             'testIntegrationAccount': self.create_random_name(prefix='cli_test_integration_accounts'[:9], length=24),
             'IntegrationAccounts_2': self.create_random_name(prefix='cli_test_integration_accounts'[:9], length=24),
             'testWorkflow': self.create_random_name(prefix='cli_test_workflows'[:9], length=24),
             'Workflows_2': self.create_random_name(prefix='cli_test_workflows'[:9], length=24),
             'Workflows_3': self.create_random_name(prefix='cli_test_workflows'[:9], length=24),
+            'input_path': os.path.join(curr_dir, 'integration.json'),
+            'definition_path': os.path.join(curr_dir, 'workflow.json'),
+            'definition_path_2': os.path.join(curr_dir, 'workflowupdate.json'),
         })
 
         self.cmd('az logic integration-account create '
@@ -44,7 +43,7 @@ class LogicManagementClientScenarioTest(ScenarioTest):
 
         self.cmd('az logic integration-account import '
                  '--location "centralus" '
-                 '--input-path "src/logic/azext_logic/tests/latest/integration.json" '
+                 '--input-path "{input_path}" '
                  '--name "{IntegrationAccounts_2}" '
                  '--resource-group "{rg_2}" ',
                  checks=[JMESPathCheck('name', self.kwargs.get('IntegrationAccounts_2', ''))])
@@ -52,7 +51,7 @@ class LogicManagementClientScenarioTest(ScenarioTest):
         self.cmd('az logic workflow create '
                  '--resource-group "{rg}" '
                  '--location "centralus" '
-                 '--definition "src/logic/azext_logic/tests/latest/workflow.json" '
+                 '--definition "{definition_path}" '
                  '--name "{testWorkflow}"',
                  checks=[JMESPathCheck('name', self.kwargs.get('testWorkflow', ''))])
 
@@ -89,7 +88,7 @@ class LogicManagementClientScenarioTest(ScenarioTest):
         self.cmd('az logic workflow update '
                  '--resource-group "{rg}" '
                  '--tag atag=123 '
-                 '--definition "src/logic/azext_logic/tests/latest/workflowupdate.json" '
+                 '--definition "{definition_path_2}" '
                  '--name "{testWorkflow}"',
                  checks=[JMESPathCheck('tags.atag', 123),
                          JMESPathCheck('definition.triggers.When_a_feed_item_is_published.recurrence.interval', 2)])
