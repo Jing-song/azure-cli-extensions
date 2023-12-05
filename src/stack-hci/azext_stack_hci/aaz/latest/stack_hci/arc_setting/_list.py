@@ -22,11 +22,13 @@ class List(AAZCommand):
     """
 
     _aaz_info = {
-        "version": "2023-03-01",
+        "version": "2023-08-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/resourcegroups/{}/providers/microsoft.azurestackhci/clusters/{}/arcsettings", "2023-03-01"],
+            ["mgmt-plane", "/subscriptions/{}/resourcegroups/{}/providers/microsoft.azurestackhci/clusters/{}/arcsettings", "2023-08-01-preview"],
         ]
     }
+
+    AZ_SUPPORT_PAGINATION = True
 
     def _handler(self, command_args):
         super()._handler(command_args)
@@ -119,7 +121,7 @@ class List(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2023-03-01",
+                    "api-version", "2023-08-01-preview",
                     required=True,
                 ),
             }
@@ -219,6 +221,21 @@ class List(AAZCommand):
 
             connectivity_properties = cls._schema_on_200.value.Element.properties.connectivity_properties
             connectivity_properties.enabled = AAZBoolType()
+            connectivity_properties.service_configurations = AAZListType(
+                serialized_name="serviceConfigurations",
+            )
+
+            service_configurations = cls._schema_on_200.value.Element.properties.connectivity_properties.service_configurations
+            service_configurations.Element = AAZObjectType()
+
+            _element = cls._schema_on_200.value.Element.properties.connectivity_properties.service_configurations.Element
+            _element.port = AAZIntType(
+                flags={"required": True},
+            )
+            _element.service_name = AAZStrType(
+                serialized_name="serviceName",
+                flags={"required": True},
+            )
 
             default_extensions = cls._schema_on_200.value.Element.properties.default_extensions
             default_extensions.Element = AAZObjectType()
@@ -238,6 +255,10 @@ class List(AAZCommand):
             _element = cls._schema_on_200.value.Element.properties.per_node_details.Element
             _element.arc_instance = AAZStrType(
                 serialized_name="arcInstance",
+                flags={"read_only": True},
+            )
+            _element.arc_node_service_principal_object_id = AAZStrType(
+                serialized_name="arcNodeServicePrincipalObjectId",
                 flags={"read_only": True},
             )
             _element.name = AAZStrType(

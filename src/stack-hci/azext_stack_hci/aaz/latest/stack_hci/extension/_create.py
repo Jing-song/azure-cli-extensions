@@ -22,9 +22,9 @@ class Create(AAZCommand):
     """
 
     _aaz_info = {
-        "version": "2023-03-01",
+        "version": "2023-08-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/resourcegroups/{}/providers/microsoft.azurestackhci/clusters/{}/arcsettings/{}/extensions/{}", "2023-03-01"],
+            ["mgmt-plane", "/subscriptions/{}/resourcegroups/{}/providers/microsoft.azurestackhci/clusters/{}/arcsettings/{}/extensions/{}", "2023-08-01-preview"],
         ]
     }
 
@@ -81,6 +81,7 @@ class Create(AAZCommand):
             options=["--protected-settings"],
             arg_group="ExtensionParameters",
             help="Protected settings (may contain secrets).",
+            blank={},
         )
         _args_schema.publisher = AAZStrArg(
             options=["--publisher"],
@@ -91,6 +92,7 @@ class Create(AAZCommand):
             options=["--settings"],
             arg_group="ExtensionParameters",
             help="Json formatted public settings for the extension.",
+            blank={},
         )
         _args_schema.type = AAZStrArg(
             options=["--type"],
@@ -193,7 +195,7 @@ class Create(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2023-03-01",
+                    "api-version", "2023-08-01-preview",
                     required=True,
                 ),
             }
